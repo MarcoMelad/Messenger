@@ -12,7 +12,7 @@ class Conversation extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'user_id', 'label'
+        'user_id', 'label', 'last_message_id'
     ];
 
     public function user(): BelongsTo
@@ -29,5 +29,10 @@ class Conversation extends Model
             ->withPivot([
                 'role', 'joined_at'
             ]);
+    }
+    public function lastMessage(): BelongsTo
+    {
+        return $this->belongsTo(Message::class, 'last_message_id', 'id')
+            ->withDefault();
     }
 }
