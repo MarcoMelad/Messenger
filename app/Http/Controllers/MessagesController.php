@@ -37,7 +37,7 @@ class MessagesController extends Controller
     {
         $storeMessagesRequest->validated();
 
-        $user = \App\Models\User::find(1);//Auth::user();
+        $user = Auth::user();
         $user_id = $storeMessagesRequest->post('user_id');
         $conversation_id = $storeMessagesRequest->post('conversation_id');
 
