@@ -66,7 +66,7 @@ class MessagesController extends Controller
             }
 
             $message = $conversation->messages()->create([
-                'user_id' => $user_id,
+                'user_id' => $user->id,
                 'body' => $storeMessagesRequest->post('message')
             ]);
 

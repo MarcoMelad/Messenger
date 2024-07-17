@@ -2211,14 +2211,14 @@
                 <!-- Chat: Content -->
                 <div class="chat-body hide-scrollbar flex-1 h-100">
                     <div class="chat-body-inner">
-                        <div class="py-6 py-lg-12">
+                        <div class="py-6 py-lg-12" id="chat-body">
 
                             <!-- Message -->
                             @foreach($messages as $message)
                             <div class="message @if($message->user_id == Auth::id()) message-out @endif">
                                 <a href="" data-bs-toggle="modal" data-bs-target="#modal-profile"
                                    class="avatar avatar-responsive">
-                                    <img class="avatar-img" src="assets/img/avatars/1.jpg" alt="">
+                                    <img class="avatar-img" src="{{ $message->user->avatar_url }}" alt="">
                                 </a>
 
                                 <div class="message-inner">
@@ -2327,7 +2327,9 @@
                     <!-- Chat: Files -->
 
                     <!-- Chat: Form -->
-                    <form class="chat-form rounded-pill bg-dark" data-emoji-form="">
+                    <form class="chat-form rounded-pill bg-dark" data-emoji-form="" method="post" action="{{ route('api.messages.store') }}">
+                        @csrf
+                        <input type="hidden" name="conversation_id" value="{{ $activeChat->id }}">
                         <div class="row align-items-center gx-0">
                             <div class="col-auto">
                                 <a href="#" class="btn btn-icon btn-link text-body rounded-circle" id="dz-btn">
@@ -2342,7 +2344,7 @@
 
                             <div class="col">
                                 <div class="input-group">
-                                    <textarea class="form-control px-0" placeholder="Type your message..." rows="1"
+                                    <textarea name="message" class="form-control px-0" placeholder="Type your message..." rows="1"
                                               data-emoji-input="" data-autosize="true"></textarea>
 
                                     <a href="#" class="input-group-text text-body pe-0" data-emoji-btn="">
@@ -3853,7 +3855,25 @@
 </div>
 
 <!-- Scripts -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="{{ asset('/assets/js/vendor.js')}}"></script>
 <script src="{{ asset('/assets/js/template.js')}}"></script>
+<script src="{{ asset('/assets/js/messenger.js')}}"></script>
+<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+<script>
+    const userId = {{ Auth::id() }}
+    Pusher.logToConsole = true;
+
+    var pusher = new Pusher('c845a47c2a160de2439b', {
+        cluster: 'ap2',
+        authEndpoint: "/broadcasting/auth",
+    });
+
+    var channel = pusher.subscribe(`presence-Messenger.${userId}`);
+    channel.bind(`new-message`, function(data) {
+        console.log('New message received:', data);
+        addMessage(data.message.body)
+    });
+</script>
 </body>
 </html>
